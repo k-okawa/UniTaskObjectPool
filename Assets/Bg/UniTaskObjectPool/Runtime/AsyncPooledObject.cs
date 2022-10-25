@@ -1,9 +1,10 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace Bg.UniTaskObjectPool
 {
-    public struct AsyncPooledObject<T> : IDisposable where T : class
+    public readonly struct AsyncPooledObject<T> where T : class
     {
         readonly T m_ToReturn;
         readonly IAsyncObjectPool<T> m_Pool;
@@ -14,6 +15,9 @@ namespace Bg.UniTaskObjectPool
             m_Pool = pool;
         }
 
-        void IDisposable.Dispose() => m_Pool.Release(m_ToReturn);
+        public UniTask DisposeAsync(CancellationToken ct = default)
+        {
+            return m_Pool.Release(m_ToReturn, ct);
+        }
     }
 }

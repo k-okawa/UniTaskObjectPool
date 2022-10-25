@@ -1,0 +1,19 @@
+{
+    "name": "UniTaskObjectPoolTest",
+    "rootNamespace": "",
+    "references": [
+        "GUID:dffd299765a194c1aa9aa52647a02c6a",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
