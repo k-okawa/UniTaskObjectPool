@@ -26,5 +26,17 @@ namespace Bg.UniTaskObjectPoolTest
                 );
             await CommonTest.NormalTest(objectPool);
         });
+        
+        [UnityTest]
+        public IEnumerator LoopTest() => UniTask.ToCoroutine(async () =>
+        {
+            var objectPool = new AsyncObjectPool<CommonTest.SamplePoolObj>(
+                CommonTest.CreateFunc,
+                CommonTest.OnGet,
+                CommonTest.OnRelease,
+                CommonTest.Destroy
+            );
+            await CommonTest.LoopTest(objectPool, 10);
+        });
     }
 }
