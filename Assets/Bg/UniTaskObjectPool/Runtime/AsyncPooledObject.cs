@@ -8,6 +8,8 @@ namespace Bg.UniTaskObjectPool
     {
         readonly T m_ToReturn;
         readonly IAsyncObjectPool<T> m_Pool;
+
+        public T Get() => m_ToReturn;
         
         internal AsyncPooledObject(T value, IAsyncObjectPool<T> pool)
         {
