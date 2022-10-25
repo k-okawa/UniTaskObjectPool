@@ -108,7 +108,18 @@ namespace Bg.UniTaskObjectPoolTest
                 hasException = true;
             }
             Assert.IsTrue(hasException);
-            hasException = false;
+        });
+
+        [UnityTest]
+        public IEnumerator CancelTest() => UniTask.ToCoroutine(async () =>
+        {
+            var objectPool = new AsyncObjectPool<CommonTest.SamplePoolObj>(CommonTest.CreateFunc, CommonTest.OnGet, CommonTest.OnRelease, CommonTest.Destroy);
+            await CommonTest.CancelTest(objectPool);
+            
+            objectPool = new AsyncObjectPool<CommonTest.SamplePoolObj>(CommonTest.CreateFunc, CommonTest.OnGet);
+            var pooled = await objectPool.GetPooledObject();
+            await pooled.DisposeAsync();
+            await CommonTest.CancelTest(objectPool);
         });
     }
 }

@@ -92,5 +92,36 @@ namespace Bg.UniTaskObjectPoolTest
             
             Assert.IsTrue(pool.CountInactive == count);
         }
+
+        public static async UniTask CancelTest(IAsyncObjectPool<SamplePoolObj> pool, CancellationToken ct = default)
+        {
+            bool cancelled = false;
+            var cancellation = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            try
+            {
+                cancellation.Cancel();
+                await pool.Get(cancellation.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                cancelled = true;
+            }
+
+            Assert.IsTrue(cancelled);
+            cancelled = false;
+            cancellation = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            
+            try
+            {
+                cancellation.Cancel();
+                var obj = await pool.Get(cancellation.Token);
+                await pool.Release(obj, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                cancelled = true;
+            }
+            Assert.IsTrue(cancelled);
+        }
     }
 }
