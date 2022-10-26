@@ -19,6 +19,8 @@ namespace Bg.UniTaskObjectPool
         public int CountActive => CountAll - CountInactive;
         public int CountInactive => m_Stack.Count;
 
+        private CancellationTokenSource m_Cancellation = new CancellationTokenSource();
+
         public AsyncObjectPool(Func<CancellationToken, UniTask<T>> createFunc, Func<T, CancellationToken, UniTask> actionOnGet = null, Func<T, CancellationToken, UniTask> actionOnRelease = null, Action<T> actionOnDestroy = null, bool collectionCheck = true, int defaultCapacity = 10, int maxSize = 10000)
         {
             if (createFunc == null)
@@ -38,10 +40,12 @@ namespace Bg.UniTaskObjectPool
 
         public async UniTask<T> Get(CancellationToken ct = default)
         {
+            var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            
             T element;
             if (m_Stack.Count == 0)
             {
-                element = await m_CreateFunc(ct);
+                element = await m_CreateFunc(linkedCancellation.Token);
                 CountAll++;
             }
             else
@@ -49,18 +53,20 @@ namespace Bg.UniTaskObjectPool
                 element = m_Stack.Pop();
             }
             if (m_ActionOnGet != null)
-                await m_ActionOnGet(element, ct);
+                await m_ActionOnGet(element, linkedCancellation.Token);
             return element;
         }
 
         public async UniTask<AsyncPooledObject<T>> GetPooledObject(CancellationToken ct = default)
         {
-            var element = await Get(ct);
+            var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            var element = await Get(linkedCancellation.Token);
             return new AsyncPooledObject<T>(element, this);
         }
 
         public async UniTask Release(T element, CancellationToken ct = default)
         {
+            var linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(ct);
             if (m_CollectionCheck && m_Stack.Count > 0)
             {
                 if (m_Stack.Contains(element))
@@ -68,7 +74,7 @@ namespace Bg.UniTaskObjectPool
             }
 
             if(m_ActionOnRelease != null)
-                await m_ActionOnRelease(element, ct);
+                await m_ActionOnRelease(element, linkedCancellation.Token);
 
             if (CountInactive < m_MaxSize)
             {
@@ -82,6 +88,7 @@ namespace Bg.UniTaskObjectPool
         
         public void Clear()
         {
+            m_Cancellation.Cancel();
             if (m_ActionOnDestroy != null)
             {
                 foreach (var item in m_Stack)
@@ -91,6 +98,7 @@ namespace Bg.UniTaskObjectPool
             }
             m_Stack.Clear();
             CountAll = 0;
+            m_Cancellation = new CancellationTokenSource();
         }
 
         public void Dispose()
