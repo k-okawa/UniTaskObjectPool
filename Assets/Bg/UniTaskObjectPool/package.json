@@ -1,0 +1,11 @@
+{
+  "name": "com.bg.unitaskobjectpool",
+  "displayName": "UniTaskObjectPool",
+  "version": "1.0.0",
+  "unity": "2020.2",
+  "description": "ObjectPool for UniTask",
+  "author": {
+    "name": "KyoheiOkawa",
+    "url": "https://github.com/k-okawa"
+  }
+}
