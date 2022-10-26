@@ -7,13 +7,13 @@ namespace Bg.UniTaskObjectPool
 {
     public class AsyncObjectPool<T> : IDisposable, IAsyncObjectPool<T> where T : class
     {
-        internal readonly Stack<T> m_Stack;
+        private readonly Stack<T> m_Stack;
         private readonly Func<CancellationToken, UniTask<T>> m_CreateFunc;
         private readonly Func<T, CancellationToken, UniTask> m_ActionOnGet;
         private readonly Func<T, CancellationToken, UniTask> m_ActionOnRelease;
         private readonly Action<T> m_ActionOnDestroy;
         private readonly int m_MaxSize;
-        internal bool m_CollectionCheck;
+        private bool m_CollectionCheck;
 
         public int CountAll { get; private set; }
         public int CountActive => CountAll - CountInactive;
