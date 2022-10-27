@@ -1,5 +1,7 @@
 # UniTaskObjectPool
 
+[![openupm](https://img.shields.io/npm/v/com.bg.unitaskobjectpool?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.bg.unitaskobjectpool/)
+
 ObjectPool for UniTask.
 
 AsyncObjectPool in this package conform to [UnityEngine.Pool.ObjectPool<T>](https://docs.unity3d.com/ScriptReference/Pool.ObjectPool_1.html)
